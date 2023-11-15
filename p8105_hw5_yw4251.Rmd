@@ -20,20 +20,36 @@ file_list <- list.files(path = "data/")
 
 ```{r}
 
-sim_mean_test <- function(n=30, mu, sigma = 5) {
+sim_mean_test <- function(mu,n=30, sigma = 5) {
   sim_data = tibble(
-    x=rnorm(n=n, mu, sd = sigma)
+    x=rnorm(n=n, mean=mu, sd = sigma)
   )
   test_result = broom::tidy(t.test(sim_data$x, mu=mu))|>
     select(mu_hat=estimate,p.value)
   return(test_result)
 }
 
+sim_results_df_0 =   
+  map(1:50, \(i) sim_mean_test(0)) |> 
+  bind_rows()
 
-sim_results_df = 
+sim_results_df_1_6 = 
   expand_grid(
-    mu = 0:6,
-    iter = 1:5000
-  )
+    mu = 1:6,
+    iter = 1:50
+  )|> 
+  mutate(
+    estimate_df = map(mu, sim_mean_test)
+  ) |> 
+  unnest(estimate_df)
+
+power_analysis=sim_results_df_1_6|>
+  group_by(mu)|>
+  summarise(
+    power=mean(p.value<0.05),
+    avg_mu_hat = mean(mu_hat),
+    avg_mu_hat_rejected = mean(mu_hat[p.value < 0.05])
+    )
+  
 ```
 
