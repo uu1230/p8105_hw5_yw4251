@@ -14,7 +14,7 @@ library(ggridges)
 # Problem 2
 
 ```{r}
-file_list = list.files(path = "data/")
+file_list = list.files(path = "data/",full.names = TRUE)
 file_info_df = data.frame(file_name = file_list)
 
 process_file = function(file_path) {
@@ -28,6 +28,14 @@ process_file = function(file_path) {
 
   return(data)
 }
+
+all_data = map_df(file_info_df$file_name, process_file)|>
+  pivot_longer(
+    week_1:week_8,
+    names_to="week",
+    values_to="outcome",
+    names_prefix="week_"
+  )
 ```
 
 # Problem 3
