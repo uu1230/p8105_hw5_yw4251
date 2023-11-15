@@ -8,18 +8,32 @@ output: github_document
 ```{r}
 library(tidyverse)
 library(purrr)
+library(ggridges)
 ```
 
 # Problem 2
 
 ```{r}
-file_list <- list.files(path = "data/")
+file_list = list.files(path = "data/")
+file_info_df = data.frame(file_name = file_list)
+
+process_file = function(file_path) {
+  parts = str_split(basename(file_path), "_|\\.")[[1]]
+  arm = parts[1]
+  subject_id = parts[2]
+
+  data = read.csv(file_path) 
+
+  data = mutate(data, subject_id = subject_id, arm = arm)
+
+  return(data)
+}
 ```
 
 # Problem 3
 
 ```{r}
-
+set.seed(1)
 sim_mean_test <- function(mu,n=30, sigma = 5) {
   sim_data = tibble(
     x=rnorm(n=n, mean=mu, sd = sigma)
@@ -30,13 +44,15 @@ sim_mean_test <- function(mu,n=30, sigma = 5) {
 }
 
 sim_results_df_0 =   
-  map(1:50, \(i) sim_mean_test(0)) |> 
+  map(1:5000, \(i) sim_mean_test(0)) |> 
   bind_rows()
+
+head(sim_results_df_0)
 
 sim_results_df_1_6 = 
   expand_grid(
-    mu = 1:6,
-    iter = 1:50
+    mu = 0:6,
+    iter = 1:5000
   )|> 
   mutate(
     estimate_df = map(mu, sim_mean_test)
@@ -51,5 +67,13 @@ power_analysis=sim_results_df_1_6|>
     avg_mu_hat_rejected = mean(mu_hat[p.value < 0.05])
     )
   
+```
+
+```{r}
+power_analysis|>
+  ggplot(aes(x=mu,y=power))+
+  geom_point() +
+  geom_line() +
+  labs(title = "Power vs True Mean", x = "True Mean", y = "Power")
 ```
 
