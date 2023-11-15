@@ -32,7 +32,7 @@ sim_mean_test <- function(n=30, mu, sigma = 5) {
 
 sim_results_df = 
   expand_grid(
-    miu = 0:6,
+    mu = 0:6,
     iter = 1:5000
   )
 ```
