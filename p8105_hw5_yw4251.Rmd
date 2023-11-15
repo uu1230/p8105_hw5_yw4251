@@ -1,0 +1,39 @@
+---
+title: "p8105_hw5_yw4251"
+author: "You Wu"
+date: 2023-11-12
+output: github_document
+---
+# Problem 0
+```{r}
+library(tidyverse)
+library(purrr)
+```
+
+# Problem 2
+
+```{r}
+file_list <- list.files(path = "data/")
+```
+
+# Problem 3
+
+```{r}
+
+sim_mean_test <- function(n=30, mu, sigma = 5) {
+  sim_data = tibble(
+    x=rnorm(n=n, mu, sd = sigma)
+  )
+  test_result = broom::tidy(t.test(sim_data$x, mu=mu))|>
+    select(mu_hat=estimate,p.value)
+  return(test_result)
+}
+
+
+sim_results_df = 
+  expand_grid(
+    miu = 0:6,
+    iter = 1:5000
+  )
+```
+
