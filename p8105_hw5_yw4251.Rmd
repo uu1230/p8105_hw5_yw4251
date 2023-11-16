@@ -76,6 +76,7 @@ ggplot(all_data, aes(x = week, y = outcome, group = subject_id, color = subject_
 
 # Problem 3
 
+Generate 5000 datasets when `mu=0`.
 ```{r}
 set.seed(1)
 sim_mean_test <- function(mu,n=30, sigma = 5) {
@@ -93,9 +94,14 @@ sim_results_df_0 =
 
 head(sim_results_df_0)
 
+```
+
+Repeat simulation for `mu={1,2,3,4,5,6}`.
+```{r}
+set.seed(1)
 sim_results_df_1_6 = 
   expand_grid(
-    mu = 0:6,
+    mu = 1:6,
     iter = 1:50
   )|> 
   mutate(
@@ -112,6 +118,8 @@ power_analysis=sim_results_df_1_6|>
     )
   
 ```
+
+
 
 ```{r}
 power_analysis|>
