@@ -99,20 +99,20 @@ head(sim_results_df_0)
 Repeat simulation for `mu={1,2,3,4,5,6}`.
 ```{r}
 set.seed(1)
-sim_results_df_1_6 = 
+sim_results_df_0_6 = 
   expand_grid(
-    mu = 1:6,
-    iter = 1:50
+    mu = 0:6,
+    iter = 1:5000
   )|> 
   mutate(
     estimate_df = map(mu, sim_mean_test)
   ) |> 
   unnest(estimate_df)
 
-power_analysis=sim_results_df_1_6|>
+power_analysis=sim_results_df_0_6|>
   group_by(mu)|>
   summarise(
-    power=mean(p.value<0.05)
+    power=mean(p.value<0.05),
     avg_mu_hat = mean(mu_hat),
     avg_mu_hat_rejected = mean(mu_hat[p.value < 0.05])
     )
@@ -131,9 +131,29 @@ power_analysis|>
 ```
 The larger the true mean `μ`, the greater the power of the test.  Initially, the power is almost negligible, but it surges significantly as the true mean grows, eventually approaching a power value of 1. This indicates that the larger the discrepancy from the null hypothesis, the more effective the test is at identifying an actual effect, showing a positive correlation between effect size and test power.
 
+Now, plot average estimate of u.
+
+```{r}
+ggplot(power_analysis, aes(x = mu)) +
+  geom_line(aes(y = avg_mu_hat, color = "Average μ Estimate")) +
+  geom_point(aes(y = avg_mu_hat, color = "Average μ Estimate") )+
+  geom_line(aes(y = avg_mu_hat_rejected, color = "Average μ Estimate (Null Rejected)")) +
+  geom_point(aes(y = avg_mu_hat_rejected, color = "Average μ Estimate (Null Rejected)")) +
+  labs(
+    title = "Average Estimates of μ", 
+    x = "True Value of μ", 
+    y = "Average Estimate of μ",
+    color = "Estimate Type"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")+
+  scale_color_manual(values = c("Average μ Estimate" = "#e7298a", "Average μ Estimate (Null Rejected)" = "#7570b3"))
+```
 
 
+No, the sample average of $\hat\mu$ across tests for which the null is rejected is not approximately equal to the true value of $\mu$, especially at lower true mean values. As the true mean $\mu$ increases, the average estimated $\hat\mu$ from tests where the null hypothesis is rejected approaches the actual value, due to the positive correlation between the magnitude of the effect and the power of the test.
+At a true mean of 0, the average $\hat\mu$ from rejected tests is close to 0, influenced by a large number of trials and the central limit theorem. As the true mean increases, more tests reject the null hypothesis, aligning the sample mean with the true mean, especially noticeable at higher true means.
 
-
+For rejected tests, the average $\hat\mu$ is typically higher than the true $\mu$, especially at smaller true mean values. This is because rejections occur when sample means significantly differ from the null hypothesis mean of zero. With larger true means, the average $\hat\mu$ aligns more closely with $\mu$.
 
 
