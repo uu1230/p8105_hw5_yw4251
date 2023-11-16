@@ -38,6 +38,11 @@ all_data = map_df(file_info_df$file_name, process_file)|>
     names_to="week",
     values_to="outcome",
     names_prefix="week_"
+  )|>
+  mutate(
+    week = as.numeric(week),
+    arm=recode(arm, "con"="control", "exp"="experimental"),
+    arm = as.factor(arm)           
   )
 
 all_data
@@ -48,16 +53,26 @@ Make a spaghetti plot showing observations on each subject over time
 ggplot(all_data, aes(x = week, y = outcome, group = subject_id, color = subject_id)) +
   geom_line() +
   geom_point(size=1.5)+
-  geom_smooth()+
   theme_minimal() +
   facet_grid(~arm)+
   labs(
-    title = "Observations Over Time by Subject",
+    title = "Spaghetti Plot of Observations Over Time by Subjects",
     x = "Week",
     y = "Observation Outcome",
-    color = "Group"
+    color = "Subject ID"
   ) 
 ```
+
+## _Differences between groups:_
+
+**Trend**: The experimental group shows an increasing trend over time, suggesting a possible treatment effect, while the control group's trend is not consistently upward.
+
+**Cohesion**: Outcomes vary significantly among subjects in both groups. The control group's outcomes are more closely bunched together, in contrast to the experimental group, where there's a broader spread of individual outcomes, suggesting a range of responses to the treatment.
+
+**Time Change**: The distinction between the control and experimental groups grows more evident around the fourth or fifth week, suggesting this may be the period when the treatment begins to have a discernible impact.
+
+
+
 
 # Problem 3
 
