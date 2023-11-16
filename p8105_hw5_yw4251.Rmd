@@ -5,6 +5,7 @@ date: 2023-11-12
 output: github_document
 ---
 # Problem 0
+Load Necessary Packages.
 ```{r}
 library(tidyverse)
 library(purrr)
@@ -12,6 +13,8 @@ library(ggridges)
 ```
 
 # Problem 2
+
+Load and tidy the dataset.
 
 ```{r}
 file_list = list.files(path = "data/",full.names = TRUE)
@@ -36,6 +39,24 @@ all_data = map_df(file_info_df$file_name, process_file)|>
     values_to="outcome",
     names_prefix="week_"
   )
+
+all_data
+```
+
+Make a spaghetti plot showing observations on each subject over time
+```{r}
+ggplot(all_data, aes(x = week, y = outcome, group = subject_id, color = subject_id)) +
+  geom_line() +
+  geom_point(size=1.5)+
+  geom_smooth()+
+  theme_minimal() +
+  facet_grid(~arm)+
+  labs(
+    title = "Observations Over Time by Subject",
+    x = "Week",
+    y = "Observation Outcome",
+    color = "Group"
+  ) 
 ```
 
 # Problem 3
@@ -60,7 +81,7 @@ head(sim_results_df_0)
 sim_results_df_1_6 = 
   expand_grid(
     mu = 0:6,
-    iter = 1:5000
+    iter = 1:50
   )|> 
   mutate(
     estimate_df = map(mu, sim_mean_test)
