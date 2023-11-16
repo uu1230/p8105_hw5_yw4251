@@ -83,8 +83,8 @@ sim_mean_test <- function(mu,n=30, sigma = 5) {
   sim_data = tibble(
     x=rnorm(n=n, mean=mu, sd = sigma)
   )
-  test_result = broom::tidy(t.test(sim_data$x, mu=mu))|>
-    select(mu_hat=estimate,p.value)
+  test_result = broom::tidy(t.test(sim_data$x))|>
+    select(mu_hat=estimate, p.value)
   return(test_result)
 }
 
@@ -112,11 +112,11 @@ sim_results_df_1_6 =
 power_analysis=sim_results_df_1_6|>
   group_by(mu)|>
   summarise(
-    power=mean(p.value<0.05),
+    power=mean(p.value<0.05)
     avg_mu_hat = mean(mu_hat),
     avg_mu_hat_rejected = mean(mu_hat[p.value < 0.05])
     )
-  
+
 ```
 
 
