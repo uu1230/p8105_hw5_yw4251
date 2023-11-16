@@ -119,13 +119,21 @@ power_analysis=sim_results_df_1_6|>
 
 ```
 
-
+Make plot to show the relationship between the effect size (represented by the true value of μ) and the statistical power.
 
 ```{r}
 power_analysis|>
   ggplot(aes(x=mu,y=power))+
-  geom_point() +
-  geom_line() +
-  labs(title = "Power vs True Mean", x = "True Mean", y = "Power")
+  geom_point(colour="red") +
+  geom_line(colour="blue") +
+  labs(title = "Statistical Power by True Mean", x = "True Mean(μ)", y = "Power")+
+  theme_minimal()
 ```
+The larger the true mean `μ`, the greater the power of the test.  Initially, the power is almost negligible, but it surges significantly as the true mean grows, eventually approaching a power value of 1. This indicates that the larger the discrepancy from the null hypothesis, the more effective the test is at identifying an actual effect, showing a positive correlation between effect size and test power.
+
+
+
+
+
+
 
